@@ -130,9 +130,12 @@ class AuthService {
   // Login
   public async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
     try {
+      console.log('🔐 AuthService: Starting login process', { username: credentials.username });
       this.setLoading(true);
       
       const response = await api.post<LoginResponse>('/auth/login', credentials);
+      
+      console.log('🔐 AuthService: Login successful', { user: response.data.user });
       
       // Guardar tokens
       tokenManager.setAccessToken(response.data.accessToken);
@@ -147,6 +150,7 @@ class AuthService {
       
       return response;
     } catch (error) {
+      console.log('🔐 AuthService: Login failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       this.setLoading(false);
       throw error;
     }

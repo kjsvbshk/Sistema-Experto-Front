@@ -55,12 +55,25 @@ export async function apiRequest<T = any>(
     credentials: 'include', // Para cookies
   };
 
+  // Log de la petición
+  console.log(`🚀 API Request: ${options.method || 'GET'} ${url}`, {
+    body: options.body ? JSON.parse(options.body as string) : undefined,
+    hasToken: !!token
+  });
+
   try {
     const response = await fetch(url, config);
     
     // Si la respuesta no es exitosa, lanzar error
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      
+      // Log del error
+      console.log(`❌ API Error: ${response.status} ${url}`, {
+        error: errorData.message || `HTTP Error: ${response.status}`,
+        status: response.status
+      });
+      
       throw new ApiErrorHandler(
         errorData.message || `HTTP Error: ${response.status}`,
         response.status,
@@ -69,6 +82,13 @@ export async function apiRequest<T = any>(
     }
 
     const data = await response.json();
+    
+    // Log de la respuesta exitosa
+    console.log(`✅ API Response: ${response.status} ${url}`, {
+      success: true,
+      data: data
+    });
+    
     return data;
   } catch (error) {
     if (error instanceof ApiErrorHandler) {

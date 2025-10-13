@@ -1,14 +1,20 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function MainPage() {
   const { user, logout } = useAuth();
+  const { showSuccess, showError } = useNotification();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await logout();
+      showSuccess('¡Sesión cerrada exitosamente!');
+      navigate('/login');
     } catch (error) {
       console.error('Error during logout:', error);
+      showError('Error al cerrar sesión. Intenta nuevamente.');
     }
   };
   return (

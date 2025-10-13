@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 import UserEditModal from './UserEditModal';
 
 // Tipos basados en la estructura del backend
@@ -91,6 +93,10 @@ const mockPermissions: Permission[] = [
 ];
 
 export default function AdminPanel() {
+  const { logout } = useAuth();
+  const { showSuccess, showError } = useNotification();
+  const navigate = useNavigate();
+  
   const [users] = useState<User[]>(mockUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -103,6 +109,17 @@ export default function AdminPanel() {
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
     setSelectedUser(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      showSuccess('¡Sesión cerrada exitosamente!');
+      navigate('/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      showError('Error al cerrar sesión. Intenta nuevamente.');
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -141,12 +158,12 @@ export default function AdminPanel() {
               <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Configuración
               </button>
-              <Link
-                to="/login"
+              <button
+                onClick={handleLogout}
                 className="bg-indigo-500 hover:bg-indigo-400 text-white px-3 py-2 rounded-md text-sm font-medium"
               >
                 Cerrar sesión
-              </Link>
+              </button>
             </div>
           </div>
         </div>

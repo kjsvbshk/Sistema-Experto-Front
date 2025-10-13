@@ -1,6 +1,75 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
+import { useForm } from '../hooks/useForm';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
 
 export default function Register() {
+  const { register, error, clearError } = useAuth();
+  const { showSuccess, showError } = useNotification();
+  const navigate = useNavigate();
+
+  const { formState, isSubmitting, submitError, setValue, setTouched, handleSubmit } = useForm({
+    initialValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validationRules: {
+      username: {
+        required: true,
+        minLength: 3,
+      },
+      email: {
+        required: true,
+        email: true,
+      },
+      password: {
+        required: true,
+        minLength: 8,
+      },
+      confirmPassword: {
+        required: true,
+        custom: (value) => {
+          if (value !== formState.password.value) {
+            return 'Las contraseñas no coinciden';
+          }
+          return undefined;
+        },
+      },
+    },
+    onSubmit: async (values) => {
+      try {
+        await register({
+          username: values.username,
+          email: values.email,
+          password: values.password,
+        });
+        showSuccess('¡Registro exitoso! Redirigiendo al login...');
+        // Redirigir al login después de un breve delay
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } catch (error) {
+        // El error ya se maneja en el AuthContext
+        showError('Error al registrar usuario. Intenta nuevamente.');
+      }
+    },
+  });
+
+  const handleInputChange = (name: string, value: string) => {
+    setValue(name, value);
+    if (error || submitError) {
+      clearError();
+    }
+  };
+
+  const handleInputBlur = (name: string) => {
+    setTouched(name);
+  };
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -12,24 +81,39 @@ export default function Register() {
         <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
           Crea tu cuenta
         </h2>
+        <p className="mt-2 text-center text-sm text-gray-300">
+          ¿Ya tienes una cuenta?{' '}
+          <Link
+            to="/login"
+            className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300"
+          >
+            Inicia sesión aquí
+          </Link>
+        </p>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm/6 font-medium text-gray-100">
-              Nombre completo
+            <label htmlFor="username" className="block text-sm/6 font-medium text-gray-100">
+              Nombre de usuario
             </label>
             <div className="mt-2">
               <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
+                autoComplete="username"
                 required
-                autoComplete="name"
-                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                placeholder="Tu nombre completo"
+                value={formState.username.value}
+                onChange={(e) => handleInputChange('username', e.target.value)}
+                onBlur={() => handleInputBlur('username')}
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                placeholder="Ingresa tu nombre de usuario"
               />
+              {formState.username.touched && formState.username.error && (
+                <p className="mt-1 text-sm text-red-400">{formState.username.error}</p>
+              )}
             </div>
           </div>
 
@@ -42,11 +126,17 @@ export default function Register() {
                 id="email"
                 name="email"
                 type="email"
-                required
                 autoComplete="email"
-                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                placeholder="tu@email.com"
+                required
+                value={formState.email.value}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                onBlur={() => handleInputBlur('email')}
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                placeholder="Ingresa tu correo electrónico"
               />
+              {formState.email.touched && formState.email.error && (
+                <p className="mt-1 text-sm text-red-400">{formState.email.error}</p>
+              )}
             </div>
           </div>
 
@@ -59,11 +149,17 @@ export default function Register() {
                 id="password"
                 name="password"
                 type="password"
-                required
                 autoComplete="new-password"
-                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                placeholder="••••••••"
+                required
+                value={formState.password.value}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                onBlur={() => handleInputBlur('password')}
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                placeholder="Ingresa tu contraseña"
               />
+              {formState.password.touched && formState.password.error && (
+                <p className="mt-1 text-sm text-red-400">{formState.password.error}</p>
+              )}
             </div>
           </div>
 
@@ -76,30 +172,41 @@ export default function Register() {
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                required
                 autoComplete="new-password"
-                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                placeholder="••••••••"
+                required
+                value={formState.confirmPassword.value}
+                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                onBlur={() => handleInputBlur('confirmPassword')}
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                placeholder="Confirma tu contraseña"
               />
+              {formState.confirmPassword.touched && formState.confirmPassword.error && (
+                <p className="mt-1 text-sm text-red-400">{formState.confirmPassword.error}</p>
+              )}
             </div>
           </div>
 
+          {(error || submitError) && (
+            <ErrorMessage message={error || submitError || ''} />
+          )}
+
           <div>
-            <Link
-              to="/main"
-              className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex w-full justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Crear cuenta
-            </Link>
+              {isSubmitting ? (
+                <>
+                  <LoadingSpinner size="sm" className="mr-2" />
+                  Registrando...
+                </>
+              ) : (
+                'Crear cuenta'
+              )}
+            </button>
           </div>
         </form>
-
-        <p className="mt-10 text-center text-sm/6 text-gray-400">
-          ¿Ya tienes una cuenta?{' '}
-          <Link to="/login" className="font-semibold text-indigo-400 hover:text-indigo-300">
-            Inicia sesión aquí
-          </Link>
-        </p>
       </div>
     </div>
   );

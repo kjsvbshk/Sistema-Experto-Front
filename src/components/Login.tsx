@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { useForm } from '../hooks/useForm';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
 
 export default function Login() {
-  const { login, error, clearError, isLoading } = useAuth();
+  const { login, error, clearError } = useAuth();
+  const { showSuccess, showError } = useNotification();
   const navigate = useNavigate();
 
   const { formState, isSubmitting, submitError, setValue, setTouched, handleSubmit } = useForm({
@@ -24,11 +26,17 @@ export default function Login() {
       },
     },
     onSubmit: async (values) => {
-      await login({
-        username: values.username,
-        password: values.password,
-      });
-      navigate('/main');
+      try {
+        await login({
+          username: values.username,
+          password: values.password,
+        });
+        showSuccess('¡Inicio de sesión exitoso!');
+        navigate('/main');
+      } catch (error) {
+        // El error ya se maneja en el AuthContext
+        showError('Error al iniciar sesión. Verifica tus credenciales.');
+      }
     },
   });
 
@@ -129,20 +137,20 @@ export default function Login() {
           </div>
 
           <div>
-            <button
-              type="submit"
-              disabled={isSubmitting || isLoading}
-              className="flex w-full justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting || isLoading ? (
-                <>
-                  <LoadingSpinner size="sm" className="mr-2" />
-                  Iniciando sesión...
-                </>
-              ) : (
-                'Iniciar sesión'
-              )}
-            </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex w-full justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <LoadingSpinner size="sm" className="mr-2" />
+                        Iniciando sesión...
+                      </>
+                    ) : (
+                      'Iniciar sesión'
+                    )}
+                  </button>
           </div>
         </form>
 
