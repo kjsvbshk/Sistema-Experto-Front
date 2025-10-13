@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Login from './components/Login';
 import Register from './components/Register';
 import MainPage from './components/MainPage';
@@ -41,9 +42,9 @@ function App() {
             <Route 
               path="/admin" 
               element={
-                <ProtectedRoute requireAuth={true}>
+                <AdminRoute>
                   <AdminPanel />
-                </ProtectedRoute>
+                </AdminRoute>
               } 
             />
           </Routes>

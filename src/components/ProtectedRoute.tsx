@@ -12,6 +12,13 @@ export default function ProtectedRoute({ children, requireAuth = true }: Protect
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
+  console.log('🛡️ ProtectedRoute:', { 
+    requireAuth, 
+    isAuthenticated, 
+    isLoading, 
+    path: location.pathname 
+  });
+
   // Mostrar loading mientras se verifica la autenticación
   if (isLoading) {
     return (

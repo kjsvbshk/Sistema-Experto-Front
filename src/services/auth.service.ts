@@ -61,16 +61,21 @@ class AuthService {
 
   // Inicializar estado de autenticación
   private initializeAuth() {
+    console.log('🔐 AuthService: Initializing auth...');
     const token = tokenManager.getAccessToken();
+    console.log('🔐 AuthService: Token found:', !!token);
+    
     if (token) {
       // Obtener información del usuario desde el token JWT
       const user = this.getCurrentUserFromToken();
+      console.log('🔐 AuthService: User from token:', !!user);
       this.setState({
         user,
         isAuthenticated: !!user,
         isLoading: false,
       });
     } else {
+      console.log('🔐 AuthService: No token, setting unauthenticated');
       this.setState({
         user: null,
         isAuthenticated: false,
@@ -79,9 +84,16 @@ class AuthService {
     }
   }
 
+  // Obtener estado actual
+  public getState(): AuthState {
+    return { ...this.authState };
+  }
+
   // Suscribirse a cambios de estado
   public subscribe(listener: (state: AuthState) => void) {
     this.listeners.push(listener);
+    // Enviar el estado actual inmediatamente
+    listener(this.authState);
     return () => {
       this.listeners = this.listeners.filter(l => l !== listener);
     };

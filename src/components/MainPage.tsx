@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
+import { useAuthorization } from '../hooks/useAuthorization';
 
 export default function MainPage() {
   const { user, logout } = useAuth();
   const { showSuccess, showError } = useNotification();
+  const { isAdmin } = useAuthorization();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -34,12 +36,14 @@ export default function MainPage() {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <Link
-                to="/admin"
-                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Panel Admin
-              </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Panel Admin
+                </Link>
+              )}
               <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Perfil
               </button>

@@ -21,11 +21,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: true,
-  });
+  const [authState, setAuthState] = useState<AuthState>(authService.getState());
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
