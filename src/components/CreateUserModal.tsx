@@ -40,7 +40,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }: Crea
       confirmPassword: {
         required: true,
         custom: (value) =>
-          value !== formState.password.value ? 'Las contraseñas no coinciden.' : undefined,
+          value !== String(formState.password.value) ? 'Las contraseñas no coinciden.' : undefined,
       },
       role_id: {
         required: true,
@@ -196,7 +196,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }: Crea
                 <select
                   id="role_id"
                   value={formState.role_id.value}
-                  onChange={(e) => setValue('role_id', parseInt(e.target.value))}
+                  onChange={(e) => setValue('role_id', parseInt(e.target.value) as any)}
                   onBlur={() => setTouched('role_id')}
                   className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
