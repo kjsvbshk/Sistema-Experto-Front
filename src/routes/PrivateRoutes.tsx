@@ -9,15 +9,15 @@ import AgentPage from '../pages/AgentPage';
 import RulesAgentPage from '../pages/RulesAgentPage';
 
 export default function PrivateRoutes() {
-  const { isAdmin, isLoading, isAuthenticated } = useAuthorization();
+  const { isLoading, isAuthenticated } = useAuthorization();
   const location = useLocation();
 
-  console.log('🔐 AdminRoute:', {
-    isAuthenticated,
-    isAdmin,
-    isLoading,
-    path: location.pathname
-  });
+  // console.log('🔐 AdminRoute:', {
+  //   isAuthenticated,
+  //   isAdmin,
+  //   isLoading,
+  //   path: location.pathname
+  // });
 
   // Mostrar loading mientras se verifica el rol
   if (isLoading) {
