@@ -5,6 +5,8 @@ import { permissionsService, type Permission } from '../../../services/permissio
 import { StatusEnum } from '../../../types/general';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
+import { hasPermission } from '../../../utils/hasPermission';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface EditPermissionModalProps {
     permission: Permission;
@@ -22,6 +24,7 @@ interface EditPermissionFormData {
 
 export default function EditPermissionModal({ permission, isOpen, onClose, onPermissionUpdated }: EditPermissionModalProps) {
     const { showSuccess, showError } = useNotification();
+    const { user: userAuth } = useAuth();
 
     const { formState, isSubmitting, submitError, setValue, setTouched, handleSubmit, resetForm } = useForm({
         initialValues: {
@@ -184,20 +187,22 @@ export default function EditPermissionModal({ permission, isOpen, onClose, onPer
                             >
                                 Cancelar
                             </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <LoadingSpinner size="sm" />
-                                        <span className="ml-2">Actualizando...</span>
-                                    </>
-                                ) : (
-                                    'Actualizar Permiso'
-                                )}
-                            </button>
+                            {hasPermission('permission:update', userAuth?.permissions) && (
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <LoadingSpinner size="sm" />
+                                            <span className="ml-2">Actualizando...</span>
+                                        </>
+                                    ) : (
+                                        'Actualizar Permiso'
+                                    )}
+                                </button>
+                            )}
                         </div>
                     </form>
                 </div>

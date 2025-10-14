@@ -4,6 +4,8 @@ import { useNotification } from '../../../contexts/NotificationContext';
 import { permissionsService } from '../../../services/permissions.service';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
+import { hasPermission } from '../../../utils/hasPermission';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface CreatePermissionModalProps {
     isOpen: boolean;
@@ -19,6 +21,7 @@ interface CreatePermissionFormData {
 
 export default function CreatePermissionModal({ isOpen, onClose, onPermissionCreated }: CreatePermissionModalProps) {
     const { showSuccess, showError } = useNotification();
+    const { user: userAuth } = useAuth();
 
     const { formState, isSubmitting, submitError, setValue, setTouched, handleSubmit, resetForm } = useForm({
         initialValues: {
@@ -145,20 +148,22 @@ export default function CreatePermissionModal({ isOpen, onClose, onPermissionCre
                             >
                                 Cancelar
                             </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <LoadingSpinner size="sm" />
-                                        <span className="ml-2">Creando...</span>
-                                    </>
-                                ) : (
-                                    'Crear Permiso'
-                                )}
-                            </button>
+                            {hasPermission('permission:create', userAuth?.permissions) && (
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <LoadingSpinner size="sm" />
+                                            <span className="ml-2">Creando...</span>
+                                        </>
+                                    ) : (
+                                        'Crear Permiso'
+                                    )}
+                                </button>
+                            )}
                         </div>
                     </form>
                 </div>

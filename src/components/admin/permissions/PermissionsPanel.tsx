@@ -5,9 +5,13 @@ import PermissionsTable from "./PermissionsTable";
 import PermissionsStatsCards from "./PermissionsStatsCards";
 import CreatePermissionModal from "./CreatePermissionModal";
 import EditPermissionModal from "./EditPermissionModal";
+import { hasPermission } from "../../../utils/hasPermission";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function PermissionsPanel() {
     const { showError } = useNotification();
+    const { user } = useAuth();
+
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [loading, setLoading] = useState(true);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -92,15 +96,17 @@ export default function PermissionsPanel() {
                                 Administra los permisos del sistema y sus configuraciones
                             </p>
                         </div>
-                        <button
-                            onClick={handleCreatePermission}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center transition-colors"
-                        >
-                            <svg className="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                            Crear Permiso
-                        </button>
+                        {hasPermission('permission:create', user?.permissions) && (
+                            <button
+                                onClick={handleCreatePermission}
+                                className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center transition-colors"
+                            >
+                                <svg className="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                                Crear Permiso
+                            </button>
+                        )}
                     </div>
                 </div>
 
