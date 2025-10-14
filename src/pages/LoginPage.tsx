@@ -2,10 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { useForm } from '../hooks/useForm';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorMessage from './ErrorMessage';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 
-export default function Login() {
+export default function LoginPage() {
   const { login, error, clearError } = useAuth();
   const { showSuccess, showError } = useNotification();
   const navigate = useNavigate();
@@ -91,8 +91,8 @@ export default function Login() {
                 onChange={(e) => handleInputChange('username', e.target.value)}
                 onBlur={() => handleInputBlur('username')}
                 className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${formState.username.error
-                    ? 'focus:outline-red-500 border-red-500'
-                    : 'focus:outline-indigo-500'
+                  ? 'focus:outline-red-500 border-red-500'
+                  : 'focus:outline-indigo-500'
                   }`}
                 placeholder="tu@email.com"
               />
@@ -124,8 +124,8 @@ export default function Login() {
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 onBlur={() => handleInputBlur('password')}
                 className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${formState.password.error
-                    ? 'focus:outline-red-500 border-red-500'
-                    : 'focus:outline-indigo-500'
+                  ? 'focus:outline-red-500 border-red-500'
+                  : 'focus:outline-indigo-500'
                   }`}
                 placeholder="••••••••"
               />

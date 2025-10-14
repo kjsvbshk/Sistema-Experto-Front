@@ -10,8 +10,6 @@ export const hasPermission = (
     if (!permissionRequired) return true;
 
     if (Array.isArray(permissionRequired)) {
-        console.log("permissionRequired", permissionRequired);
-        console.log("userPermissions", userPermissions);
         return permissionRequired.some((permission: string) =>
             userPermissions?.includes(permission)
         );

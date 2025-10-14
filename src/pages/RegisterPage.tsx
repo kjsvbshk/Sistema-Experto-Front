@@ -2,10 +2,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { useForm } from '../hooks/useForm';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorMessage from './ErrorMessage';
 
-export default function Register() {
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+
+export default function RegisterPage() {
   const { register, error, clearError } = useAuth();
   const { showSuccess, showError } = useNotification();
   const navigate = useNavigate();

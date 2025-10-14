@@ -1,4 +1,4 @@
-import { Home, Shield } from "lucide-react";
+import { Book, Bot, Home, Shield } from "lucide-react";
 
 export interface MenuItem {
     name: string;
@@ -7,12 +7,25 @@ export interface MenuItem {
     permission?: string | string[];
 }
 
+// Lo ideal que el permiso minimo para acceder a la ruta sea el read
+
 export const menuItems: MenuItem[] = [
     {
         name: "Dashboard",
         href: "/",
         icon: <Home className="h-4 w-4" />,
-
+    },
+    {
+        name: "Usar Sistema Experto",
+        href: "/agent",
+        icon: <Bot className="h-4 w-4" />,
+        permission: ["agent:read"],
+    },
+    {
+        name: "Reglas de Sistema Experto",
+        href: "/rules-agent",
+        icon: <Book className="h-4 w-4" />,
+        permission: ["rules:read"],
     },
     {
         name: "Administración",

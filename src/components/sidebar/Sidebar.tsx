@@ -5,15 +5,18 @@ import { Menu, X } from 'lucide-react';
 import { menuItems } from './menuItems';
 import { hasPermission } from '../../utils/hasPermission';
 import { useState, useEffect } from 'react';
+import { useAuthorization } from '../../hooks/useAuthorization';
 
 export default function Sidebar() {
     const { isOpen, closeSidebar, toggleSidebar, openSidebar } = useSidebar();
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
+
     const [isManualToggle, setIsManualToggle] = useState(false);
 
     const filteredMenuItems = menuItems.filter((menu) => {
         if (menu.permission && menu.permission.length > 0) {
-            return hasPermission(menu.permission, user?.permissions);
+            return hasPermission(menu.permission, user?.permissions, isAdmin);
         }
 
         return true;
