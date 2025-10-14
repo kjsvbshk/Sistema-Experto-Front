@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
+import AgentModal from '../components/agent/AgentModal';
 
 interface Agent {
     id: number;
@@ -11,6 +12,9 @@ interface Agent {
 }
 
 export default function AgentPage() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+
     // Datos quemados de agentes
     const [agents] = useState<Agent[]>([
         {
@@ -50,8 +54,16 @@ export default function AgentPage() {
     };
 
     const handleStartAgent = (agentId: number) => {
-        console.log(`Iniciando agente ${agentId}`);
-        // Aquí se implementará la lógica para iniciar el agente
+        const agent = agents.find(a => a.id === agentId);
+        if (agent && agent.status === 'active') {
+            setSelectedAgent(agent);
+            setIsModalOpen(true);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedAgent(null);
     };
 
     return (
@@ -144,6 +156,15 @@ export default function AgentPage() {
                     )}
                 </div>
             </div>
+
+            {/* Agent Modal */}
+            {selectedAgent && (
+                <AgentModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    agentName={selectedAgent.name}
+                />
+            )}
         </div>
     );
 }
