@@ -57,9 +57,8 @@ export default function Notification({ message, type, duration = 3000, onClose }
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 transform transition-all duration-300 ${
-        isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-      } ${getTypeStyles()}`}
+      className={`fixed bottom-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 transform transition-all duration-300 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+        } ${getTypeStyles()}`}
     >
       <div className="p-4">
         <div className="flex items-start">

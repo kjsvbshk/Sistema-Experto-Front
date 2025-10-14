@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import Notification from '../components/Notification';
 
@@ -29,8 +30,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, []);
 
   const showNotification = useCallback((
-    message: string, 
-    type: 'success' | 'error' | 'info', 
+    message: string,
+    type: 'success' | 'error' | 'info',
     duration = 3000
   ) => {
     const id = Math.random().toString(36).substr(2, 9);

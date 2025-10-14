@@ -36,6 +36,7 @@ export default function Login() {
       } catch (error) {
         // El error ya se maneja en el AuthContext
         showError('Error al iniciar sesión. Verifica tus credenciales.');
+        console.log(error);
       }
     },
   });
@@ -89,11 +90,10 @@ export default function Login() {
                 value={formState.username.value}
                 onChange={(e) => handleInputChange('username', e.target.value)}
                 onBlur={() => handleInputBlur('username')}
-                className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${
-                  formState.username.error
+                className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${formState.username.error
                     ? 'focus:outline-red-500 border-red-500'
                     : 'focus:outline-indigo-500'
-                }`}
+                  }`}
                 placeholder="tu@email.com"
               />
               {formState.username.error && (
@@ -123,11 +123,10 @@ export default function Login() {
                 value={formState.password.value}
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 onBlur={() => handleInputBlur('password')}
-                className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${
-                  formState.password.error
+                className={`block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 ${formState.password.error
                     ? 'focus:outline-red-500 border-red-500'
                     : 'focus:outline-indigo-500'
-                }`}
+                  }`}
                 placeholder="••••••••"
               />
               {formState.password.error && (
@@ -137,20 +136,20 @@ export default function Login() {
           </div>
 
           <div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex w-full justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <LoadingSpinner size="sm" className="mr-2" />
-                        Iniciando sesión...
-                      </>
-                    ) : (
-                      'Iniciar sesión'
-                    )}
-                  </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex w-full justify-center items-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <LoadingSpinner size="sm" className="mr-2" />
+                  Iniciando sesión...
+                </>
+              ) : (
+                'Iniciar sesión'
+              )}
+            </button>
           </div>
         </form>
 

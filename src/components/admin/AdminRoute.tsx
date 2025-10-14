@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthorization } from '../hooks/useAuthorization';
-import LoadingSpinner from './LoadingSpinner';
+import { useAuthorization } from '../../hooks/useAuthorization';
+import LoadingSpinner from '../LoadingSpinner';
 
 interface AdminRouteProps {
   children: ReactNode;
@@ -11,11 +11,11 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   const { isAdmin, isLoading, isAuthenticated } = useAuthorization();
   const location = useLocation();
 
-  console.log('🔐 AdminRoute:', { 
-    isAuthenticated, 
-    isAdmin, 
-    isLoading, 
-    path: location.pathname 
+  console.log('🔐 AdminRoute:', {
+    isAuthenticated,
+    isAdmin,
+    isLoading,
+    path: location.pathname
   });
 
   // Mostrar loading mientras se verifica el rol

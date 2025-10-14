@@ -1,1 +1,65 @@
 @import "tailwindcss";
+
+/* Estilos personalizados para barras de scroll */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #374151;
+    /* gray-700 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6b7280;
+    /* gray-500 */
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+    /* gray-400 */
+}
+
+::-webkit-scrollbar-corner {
+    background: #374151;
+    /* gray-700 */
+}
+
+/* Para Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #6b7280 #374151;
+}
+
+/* Estilos para modales con overlay mejorado */
+.modal-overlay {
+    backdrop-filter: blur(2px);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Animaciones suaves para modales */
+.modal-enter {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.modal-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.modal-exit {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.modal-exit-active {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 200ms ease-in, transform 200ms ease-in;
+}

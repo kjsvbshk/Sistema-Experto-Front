@@ -36,7 +36,7 @@ export default function Register() {
           if (value !== formState.password.value) {
             return 'Las contraseñas no coinciden';
           }
-          return undefined;
+          return null;
         },
       },
     },
@@ -48,11 +48,8 @@ export default function Register() {
           password: values.password,
         });
         showSuccess('¡Registro exitoso! Redirigiendo al login...');
-        // Redirigir al login después de un breve delay
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } catch (error) {
+        navigate('/login');
+      } catch {
         // El error ya se maneja en el AuthContext
         showError('Error al registrar usuario. Intenta nuevamente.');
       }
@@ -108,7 +105,7 @@ export default function Register() {
                 value={formState.username.value}
                 onChange={(e) => handleInputChange('username', e.target.value)}
                 onBlur={() => handleInputBlur('username')}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                className="block w-full rounded-lg border-0 px-4 py-3 text-white bg-gray-800/50 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 focus:bg-gray-800/70 transition-all duration-200 sm:text-sm"
                 placeholder="Ingresa tu nombre de usuario"
               />
               {formState.username.touched && formState.username.error && (
@@ -131,7 +128,7 @@ export default function Register() {
                 value={formState.email.value}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 onBlur={() => handleInputBlur('email')}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                className="block w-full rounded-lg border-0 px-4 py-3 text-white bg-gray-800/50 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 focus:bg-gray-800/70 transition-all duration-200 sm:text-sm"
                 placeholder="Ingresa tu correo electrónico"
               />
               {formState.email.touched && formState.email.error && (
@@ -154,7 +151,7 @@ export default function Register() {
                 value={formState.password.value}
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 onBlur={() => handleInputBlur('password')}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                className="block w-full rounded-lg border-0 px-4 py-3 text-white bg-gray-800/50 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 focus:bg-gray-800/70 transition-all duration-200 sm:text-sm"
                 placeholder="Ingresa tu contraseña"
               />
               {formState.password.touched && formState.password.error && (
@@ -177,7 +174,7 @@ export default function Register() {
                 value={formState.confirmPassword.value}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                 onBlur={() => handleInputBlur('confirmPassword')}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                className="block w-full rounded-lg border-0 px-4 py-3 text-white bg-gray-800/50 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 focus:bg-gray-800/70 transition-all duration-200 sm:text-sm"
                 placeholder="Confirma tu contraseña"
               />
               {formState.confirmPassword.touched && formState.confirmPassword.error && (
