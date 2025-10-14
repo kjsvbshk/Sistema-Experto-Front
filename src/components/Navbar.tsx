@@ -37,12 +37,12 @@ export default function Navbar() {
 
                         <div className="flex items-center">
                             <img
-                                alt="Sistema de Expertos"
+                                alt="Sistema Experto"
                                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
                                 className="h-6 w-auto"
                             />
                             <span className="ml-2 text-lg font-semibold text-white">
-                                Sistema de Expertos
+                                Sistema Experto
                             </span>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useSidebar } from '../contexts/SidebarContext';
-import Sidebar from './Sidebar';
+import Sidebar from './sidebar/Sidebar';
 
 interface LayoutProps {
     children: ReactNode;
