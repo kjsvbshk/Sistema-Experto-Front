@@ -21,8 +21,9 @@ class FailureService {
     }
 
     // Obtener todas las fallas
-    async getAllFailures(): Promise<ApiResponse<Failure[]>> {
-        return await api.get<Failure[]>("/failures");
+    async getAllFailures(): Promise<Failure[]> {
+        const response = await api.get<ApiResponse<Failure[]>>("/failures");
+        return response.data;
     }
 
     // Obtener falla por ID

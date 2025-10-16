@@ -31,9 +31,9 @@ export default function FailuresPanel() {
     const handleGetFailures = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await failureService.getAllFailures();
-            setFailures(response.data || []);
-            console.log('📊 FailuresPanel: Failures loaded successfully:', response.data);
+            const failures = await failureService.getAllFailures();
+            setFailures(failures || []);
+            console.log('📊 FailuresPanel: Failures loaded successfully:', failures);
         } catch (error) {
             console.error('📊 FailuresPanel: Error loading failures:', error);
             showError('Error al cargar las fallas');

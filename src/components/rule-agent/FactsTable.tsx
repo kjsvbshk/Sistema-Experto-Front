@@ -8,15 +8,6 @@ interface FactsTableProps {
 }
 
 export default function FactsTable({ facts, onEdit, onDelete }: FactsTableProps) {
-    const getStatusColor = (status: Fact['status']) => {
-        return status === 'active'
-            ? 'bg-green-100 text-green-800 border-green-200'
-            : 'bg-gray-100 text-gray-800 border-gray-200';
-    };
-
-    const getStatusText = (status: Fact['status']) => {
-        return status === 'active' ? 'Activo' : 'Inactivo';
-    };
 
     return (
         <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
@@ -25,22 +16,13 @@ export default function FactsTable({ facts, onEdit, onDelete }: FactsTableProps)
                     <thead className="bg-gray-700">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                Nombre
+                                ID
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Código
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                 Descripción
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                Categoría
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                Valor
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                Estado
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                Fecha Creación
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                 Acciones
@@ -51,24 +33,13 @@ export default function FactsTable({ facts, onEdit, onDelete }: FactsTableProps)
                         {facts.map((fact) => (
                             <tr key={fact.id} className="hover:bg-gray-700">
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                    {fact.name}
+                                    {fact.id}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                    {fact.code}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-300">
                                     {fact.description}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {fact.category}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {fact.value}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(fact.status)}`}>
-                                        {getStatusText(fact.status)}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {fact.createdAt}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button

@@ -2,13 +2,8 @@
 
 export interface Fact {
     id: number;
-    name: string;
+    code: string;
     description: string;
-    category: string;
-    value: string;
-    status: "active" | "inactive";
-    createdAt: string;
-    updatedAt: string;
 }
 
 export interface Rule {
