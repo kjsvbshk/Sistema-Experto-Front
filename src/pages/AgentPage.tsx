@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import AgentModal from '../components/agent/AgentModal';
+import ExpertSystemModal from '../components/agent/ExpertSystemModal';
 
 interface Agent {
     id: number;
@@ -13,6 +14,7 @@ interface Agent {
 
 export default function AgentPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isExpertSystemModalOpen, setIsExpertSystemModalOpen] = useState(false);
     const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
 
     // Datos quemados de agentes
@@ -24,6 +26,14 @@ export default function AgentPage() {
             description: "Sistema experto especializado en evaluar el perfil crediticio de clientes y recomendar productos financieros adecuados basándose en su historial, ingresos y capacidad de pago.",
             questionsCount: 15,
             lastUsed: "Hace 2 horas"
+        },
+        {
+            id: 2,
+            name: "Motor de Inferencia Avanzado",
+            status: 'active',
+            description: "Sistema experto con motor de inferencia que utiliza 50+ reglas (R001-R052) para evaluación crediticia automatizada, clasificación de riesgo y recomendación de productos con explicaciones detalladas.",
+            questionsCount: 25,
+            lastUsed: "Hace 5 minutos"
         }
     ]);
 
@@ -57,12 +67,23 @@ export default function AgentPage() {
         const agent = agents.find(a => a.id === agentId);
         if (agent && agent.status === 'active') {
             setSelectedAgent(agent);
-            setIsModalOpen(true);
+            if (agentId === 2) {
+                // Motor de Inferencia Avanzado
+                setIsExpertSystemModalOpen(true);
+            } else {
+                // Agente tradicional
+                setIsModalOpen(true);
+            }
         }
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setSelectedAgent(null);
+    };
+
+    const handleCloseExpertSystemModal = () => {
+        setIsExpertSystemModalOpen(false);
         setSelectedAgent(null);
     };
 
@@ -162,6 +183,15 @@ export default function AgentPage() {
                 <AgentModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
+                    agentName={selectedAgent.name}
+                />
+            )}
+
+            {/* Expert System Modal */}
+            {selectedAgent && (
+                <ExpertSystemModal
+                    isOpen={isExpertSystemModalOpen}
+                    onClose={handleCloseExpertSystemModal}
                     agentName={selectedAgent.name}
                 />
             )}
