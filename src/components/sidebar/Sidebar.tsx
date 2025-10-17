@@ -82,7 +82,7 @@ export default function Sidebar() {
                         <div className="flex items-center transition-all duration-500 ease-out opacity-100">
                             <img
                                 alt="Sistema de Expertos"
-                                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+                                src="/logo.svg"
                                 className="h-5 w-auto transition-all duration-500 ease-out"
                             />
                             <span className="ml-2 text-sm font-semibold text-white transition-all duration-500 ease-out">
