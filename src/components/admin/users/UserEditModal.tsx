@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface User {
   id: number;
@@ -36,6 +37,7 @@ interface UserEditModalProps {
 
 export default function UserEditModal({ user, roles, permissions, onClose }: UserEditModalProps) {
   const { user: userAuth } = useAuth();
+  const { isAdmin } = useAuthorization();
 
   const [formData, setFormData] = useState({
     username: user.username,
@@ -250,7 +252,7 @@ export default function UserEditModal({ user, roles, permissions, onClose }: Use
             >
               Cancelar
             </button>
-            {hasPermission('user:update', userAuth?.permissions) && (
+            {hasPermission('user:update', userAuth?.permissions, isAdmin) && (
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"

@@ -19,13 +19,13 @@ export const menuItems: MenuItem[] = [
         name: "Usar Sistema Experto",
         href: "/agent",
         icon: <Bot className="h-4 w-4" />,
-        permission: ["agent:read"],
+        permission: ["agent:use"],
     },
     {
         name: "Reglas de Sistema Experto",
         href: "/rules-agent",
         icon: <Book className="h-4 w-4" />,
-        permission: ["rules:read"],
+        permission: ["agent:read"],
     },
     {
         name: "Administración",

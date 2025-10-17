@@ -8,6 +8,7 @@ import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface EditRoleModalProps {
     isOpen: boolean;
@@ -25,6 +26,7 @@ interface EditRoleFormData {
 export default function EditRoleModal({ isOpen, onClose, onRoleUpdated, role }: EditRoleModalProps) {
     const { showSuccess, showError } = useNotification();
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [loadingPermissions, setLoadingPermissions] = useState(false);
@@ -216,7 +218,7 @@ export default function EditRoleModal({ isOpen, onClose, onRoleUpdated, role }: 
                             >
                                 Cancelar
                             </button>
-                            {hasPermission('role:update', user?.permissions) && (
+                            {hasPermission('role:update', user?.permissions, isAdmin) && (
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}

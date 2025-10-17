@@ -7,10 +7,12 @@ import CreatePermissionModal from "./CreatePermissionModal";
 import EditPermissionModal from "./EditPermissionModal";
 import { hasPermission } from "../../../utils/hasPermission";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useAuthorization } from "../../../hooks/useAuthorization";
 
 export default function PermissionsPanel() {
     const { showError } = useNotification();
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [loading, setLoading] = useState(true);
@@ -96,7 +98,7 @@ export default function PermissionsPanel() {
                                 Administra los permisos del sistema y sus configuraciones
                             </p>
                         </div>
-                        {hasPermission('permission:create', user?.permissions) && (
+                        {hasPermission('permission:create', user?.permissions, isAdmin) && (
                             <button
                                 onClick={handleCreatePermission}
                                 className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center transition-colors"

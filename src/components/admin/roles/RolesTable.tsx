@@ -1,6 +1,7 @@
 import { useAuth } from '../../../contexts/AuthContext';
 import type { RoleWithPermissions } from '../../../services/roles.service';
 import { hasPermission } from '../../../utils/hasPermission';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface RolesTableProps {
     roles: RoleWithPermissions[];
@@ -10,6 +11,7 @@ interface RolesTableProps {
 
 export default function RolesTable({ roles, loading, onEditRole }: RolesTableProps) {
     const { user: userAuth } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const getStatusBadge = (status: string) => {
         return status === 'active'
@@ -117,7 +119,7 @@ export default function RolesTable({ roles, loading, onEditRole }: RolesTablePro
                                             {new Date(role.created_at).toLocaleDateString('es-ES')}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-center">
-                                            {hasPermission('role:update', userAuth?.permissions) && (
+                                            {hasPermission('role:update', userAuth?.permissions, isAdmin) && (
                                                 <button
                                                     onClick={() => onEditRole(role)}
                                                     className="text-indigo-400 hover:text-indigo-300 transition-colors duration-200"

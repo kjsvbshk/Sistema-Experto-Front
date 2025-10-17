@@ -1,12 +1,13 @@
 import { useCallback, useEffect } from 'react';
 import { useForm } from '../../hooks/useForm';
 import { useNotification } from '../../contexts/NotificationContext';
-import { failureService, type Failure as ApiFailure } from '../../services/failure.service';
+import { failureService } from '../../services/failure.service';
 import type { Failure } from './types';
 import LoadingSpinner from '../LoadingSpinner';
 import ErrorMessage from '../ErrorMessage';
-// import { hasPermission } from '../../utils/hasPermission';
-// import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { hasPermission } from '../../utils/hasPermission';
+import { useAuthorization } from '../../hooks/useAuthorization';
 
 interface EditFailureModalProps {
     failure: Failure;
@@ -23,7 +24,8 @@ interface EditFailureFormData {
 
 export default function EditFailureModal({ failure, isOpen, onClose, onFailureUpdated }: EditFailureModalProps) {
     const { showSuccess, showError } = useNotification();
-    // const { user: userAuth } = useAuth();
+    const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const { formState, isSubmitting, submitError, setValue, setTouched, handleSubmit, resetForm } = useForm({
         initialValues: {
@@ -161,22 +163,22 @@ export default function EditFailureModal({ failure, isOpen, onClose, onFailureUp
                             >
                                 Cancelar
                             </button>
-                            {/* {hasPermission('failure:update', userAuth?.permissions) && ( */}
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <LoadingSpinner size="sm" />
-                                        <span className="ml-2">Actualizando...</span>
-                                    </>
-                                ) : (
-                                    'Actualizar Falla'
-                                )}
-                            </button>
-                            {/* )} */}
+                            {hasPermission('failure:update', user?.permissions, isAdmin) && (
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <LoadingSpinner size="sm" />
+                                            <span className="ml-2">Actualizando...</span>
+                                        </>
+                                    ) : (
+                                        'Actualizar Falla'
+                                    )}
+                                </button>
+                            )}
                         </div>
                     </form>
                 </div>

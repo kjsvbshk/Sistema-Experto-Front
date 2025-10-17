@@ -6,11 +6,13 @@ import UserEditModal from './UserEditModal';
 import CreateUserModal from './CreateUserModal';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 export default function AdminPanel() {
 
     const { showSuccess, showError } = useNotification();
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const [users, setUsers] = useState<UserWithRole[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
@@ -122,7 +124,7 @@ export default function AdminPanel() {
                                 Administra los usuarios del sistema, sus roles y permisos
                             </p>
                         </div>
-                        {hasPermission('user:create', user?.permissions) && (
+                        {hasPermission('user:create', user?.permissions, isAdmin) && (
                             <button
                                 onClick={handleCreateUser}
                                 className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center transition-colors"
@@ -228,7 +230,7 @@ export default function AdminPanel() {
                                                     {new Date(userWithRole.user.created_at).toLocaleDateString('es-ES')}
                                                 </td>
                                                 <td className="px-4 py-3 whitespace-nowrap text-center">
-                                                    {hasPermission('user:update', user?.permissions) && (
+                                                    {hasPermission('user:update', user?.permissions, isAdmin) && (
                                                         <button
                                                             onClick={() => handleEditUser(userWithRole)}
                                                             className="text-indigo-400 hover:text-indigo-300 transition-colors duration-200"

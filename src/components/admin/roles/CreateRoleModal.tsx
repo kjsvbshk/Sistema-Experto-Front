@@ -8,6 +8,7 @@ import ErrorMessage from '../../../components/ErrorMessage';
 import { permissionsService } from '../../../services/permissions.service';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface CreateRoleModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ interface CreateRoleFormData {
 export default function CreateRoleModal({ isOpen, onClose, onRoleCreated }: CreateRoleModalProps) {
     const { showSuccess, showError } = useNotification();
     const { user: userAuth } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [loadingPermissions, setLoadingPermissions] = useState(false);
@@ -203,7 +205,7 @@ export default function CreateRoleModal({ isOpen, onClose, onRoleCreated }: Crea
                             >
                                 Cancelar
                             </button>
-                            {hasPermission('role:create', userAuth?.permissions) && (
+                            {hasPermission('role:create', userAuth?.permissions, isAdmin) && (
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}

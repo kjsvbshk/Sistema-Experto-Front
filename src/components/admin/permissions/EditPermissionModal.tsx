@@ -7,6 +7,7 @@ import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface EditPermissionModalProps {
     permission: Permission;
@@ -25,6 +26,7 @@ interface EditPermissionFormData {
 export default function EditPermissionModal({ permission, isOpen, onClose, onPermissionUpdated }: EditPermissionModalProps) {
     const { showSuccess, showError } = useNotification();
     const { user: userAuth } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const { formState, isSubmitting, submitError, setValue, setTouched, handleSubmit, resetForm } = useForm({
         initialValues: {
@@ -187,7 +189,7 @@ export default function EditPermissionModal({ permission, isOpen, onClose, onPer
                             >
                                 Cancelar
                             </button>
-                            {hasPermission('permission:update', userAuth?.permissions) && (
+                            {hasPermission('permission:update', userAuth?.permissions, isAdmin) && (
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}

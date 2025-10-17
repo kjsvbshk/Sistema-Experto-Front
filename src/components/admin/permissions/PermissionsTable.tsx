@@ -1,6 +1,7 @@
 import { useAuth } from '../../../contexts/AuthContext';
 import type { Permission } from '../../../services/permissions.service';
 import { hasPermission } from '../../../utils/hasPermission';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface PermissionsTableProps {
     permissions: Permission[];
@@ -10,6 +11,7 @@ interface PermissionsTableProps {
 
 export default function PermissionsTable({ permissions, loading, onEditPermission }: PermissionsTableProps) {
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const getStatusBadge = (status: string) => {
         return status === 'active'
@@ -99,7 +101,7 @@ export default function PermissionsTable({ permissions, loading, onEditPermissio
                                             {new Date(permission.updated_at).toLocaleDateString('es-ES')}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-center">
-                                            {hasPermission('permission:update', user?.permissions) && (
+                                            {hasPermission('permission:update', user?.permissions, isAdmin) && (
                                                 <button
                                                     onClick={() => onEditPermission(permission)}
                                                     className="text-indigo-400 hover:text-indigo-300 transition-colors duration-200"

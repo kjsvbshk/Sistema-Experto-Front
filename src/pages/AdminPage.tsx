@@ -6,6 +6,7 @@ import { User } from 'lucide-react';
 import PermissionsPanel from '../components/admin/permissions/PermissionsPanel';
 import { useAuth } from '../contexts/AuthContext';
 import { hasPermission } from '../utils/hasPermission';
+import { useAuthorization } from '../hooks/useAuthorization';
 
 type TabType = 'users' | 'roles' | 'permissions' | 'settings';
 
@@ -19,6 +20,7 @@ interface Tab {
 
 export default function AdminPage() {
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const [activeTab, setActiveTab] = useState<TabType>('users');
 
@@ -30,7 +32,7 @@ export default function AdminPage() {
                 <User className="h-5 w-5" />
             ),
             component: <UsersPanel />,
-            permissionRequired: ['user:create', 'user:read', 'user:update', 'user:delete']
+            permissionRequired: ['user:read']
         },
         {
             id: 'roles',
@@ -43,7 +45,7 @@ export default function AdminPage() {
             component: (
                 <RolePanel />
             ),
-            permissionRequired: ['role:create', 'role:read', 'role:update', 'role:delete']
+            permissionRequired: ['role:read']
         },
         {
             id: 'permissions',
@@ -56,13 +58,13 @@ export default function AdminPage() {
             component: (
                 <PermissionsPanel />
             ),
-            permissionRequired: ['permission:create', 'permission:read', 'permission:update', 'permission:delete']
+            permissionRequired: ['permission:read']
         },
     ];
 
     const activeTabData = tabs.find(tab => tab.id === activeTab);
 
-    const tabWithPermission = tabs.filter(tab => hasPermission(tab.permissionRequired, user?.permissions));
+    const tabWithPermission = tabs.filter(tab => hasPermission(tab.permissionRequired, user?.permissions, isAdmin));
 
     return (
         <div className="min-h-full bg-gray-900">

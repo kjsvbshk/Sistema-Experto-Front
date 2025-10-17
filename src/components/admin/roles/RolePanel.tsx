@@ -8,10 +8,12 @@ import CreateRoleModal from './CreateRoleModal';
 import EditRoleModal from './EditRoleModal';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 export default function RolePanel() {
     const { showError } = useNotification();
     const { user } = useAuth();
+    const { isAdmin } = useAuthorization();
 
     const [roles, setRoles] = useState<RoleWithPermissions[]>([]);
     const [loading, setLoading] = useState(true);
@@ -97,7 +99,7 @@ export default function RolePanel() {
                                 Administra los roles del sistema y sus permisos asociados
                             </p>
                         </div>
-                        {hasPermission('role:create', user?.permissions) && (
+                        {hasPermission('role:create', user?.permissions, isAdmin) && (
                             <button
                                 onClick={handleCreateRole}
                                 className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center transition-colors"

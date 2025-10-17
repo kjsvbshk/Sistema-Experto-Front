@@ -7,6 +7,7 @@ import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { hasPermission } from '../../../utils/hasPermission';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useAuthorization } from '../../../hooks/useAuthorization';
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ interface CreateUserFormData {
 export default function CreateUserModal({ isOpen, onClose, onUserCreated }: CreateUserModalProps) {
   const { showSuccess, showError } = useNotification();
   const { user: userAuth } = useAuth();
+  const { isAdmin } = useAuthorization();
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
@@ -231,7 +233,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated }: Crea
               >
                 Cancelar
               </button>
-              {hasPermission('user:create', userAuth?.permissions) && (
+              {hasPermission('user:create', userAuth?.permissions, isAdmin) && (
                 <button
                   type="submit"
                   disabled={isSubmitting}
