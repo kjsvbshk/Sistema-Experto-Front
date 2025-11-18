@@ -2,13 +2,14 @@ import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import UsersPanel from '../components/admin/users/UsersPanel';
 import RolePanel from '../components/admin/roles/RolePanel';
-import { User } from 'lucide-react';
+import { User, FileText } from 'lucide-react';
 import PermissionsPanel from '../components/admin/permissions/PermissionsPanel';
+import EvaluationsPanel from '../components/admin/evaluations/EvaluationsPanel';
 import { useAuth } from '../contexts/AuthContext';
 import { hasPermission } from '../utils/hasPermission';
 import { useAuthorization } from '../hooks/useAuthorization';
 
-type TabType = 'users' | 'roles' | 'permissions' | 'settings';
+type TabType = 'users' | 'roles' | 'permissions' | 'evaluations' | 'settings';
 
 interface Tab {
     id: TabType;
@@ -59,6 +60,17 @@ export default function AdminPage() {
                 <PermissionsPanel />
             ),
             permissionRequired: ['permission:read']
+        },
+        {
+            id: 'evaluations',
+            name: 'Evaluaciones',
+            icon: (
+                <FileText className="h-5 w-5" />
+            ),
+            component: (
+                <EvaluationsPanel />
+            ),
+            permissionRequired: [] // Accesible para todos los administradores
         },
     ];
 

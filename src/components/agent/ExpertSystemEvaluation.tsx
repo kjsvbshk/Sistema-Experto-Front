@@ -6,6 +6,7 @@ import {
   type EvaluationResult
 } from '../../services/inference-engine.service';
 import { useNotification } from '../../contexts/NotificationContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ExpertSystemEvaluationProps {
   onEvaluationComplete?: (result: EvaluationResult) => void;
@@ -15,6 +16,7 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
   onEvaluationComplete
 }) => {
   const { showSuccess, showError } = useNotification();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
@@ -613,7 +615,8 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
 
       const evaluationRequest: StartEvaluationRequest = {
         input_data: cleanedFormData,
-        session_id: inferenceEngineService.generateSessionId()
+        session_id: inferenceEngineService.generateSessionId(),
+        user_id: user?.id // Agregar el ID del usuario autenticado
       };
 
       console.log('📤 Enviando datos de evaluación:', JSON.stringify(evaluationRequest, null, 2));

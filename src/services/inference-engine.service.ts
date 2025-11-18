@@ -71,12 +71,27 @@ export interface EvaluationSession {
   id: number;
   session_id: string;
   user_id?: number;
+  user?: {
+    id: number;
+    username: string;
+    email: string;
+  };
+  input_data?: any;
+  facts_detected?: string[];
+  evaluation_result?: any;
   final_decision: string;
   risk_profile: string;
+  recommended_products?: any;
+  explanation?: string;
   confidence_score: number;
   status: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface AllEvaluationsResponse {
+  evaluations: EvaluationSession[];
+  total: number;
 }
 
 export interface EngineStats {
@@ -111,7 +126,7 @@ class InferenceEngineService {
   async getEvaluationHistory(userId: number): Promise<EvaluationSession[]> {
     console.log(`📊 Obteniendo historial de evaluaciones para usuario ${userId}...`);
     const response = await api.get<EvaluationSession[]>(`/inference-engine/history/${userId}`);
-    return response;
+    return response.data || response;
   }
 
   /**
@@ -129,6 +144,18 @@ class InferenceEngineService {
   async getEvaluationSession(sessionId: string): Promise<ApiResponse<any>> {
     console.log(`🔍 Obteniendo detalles de sesión ${sessionId}...`);
     return await api.get<any>(`/inference-engine/session/${sessionId}`);
+  }
+
+  /**
+   * Obtiene todas las evaluaciones (para panel administrativo)
+   */
+  async getAllEvaluations(limit: number = 50, offset: number = 0): Promise<AllEvaluationsResponse> {
+    console.log(`📋 Obteniendo todas las evaluaciones (limit: ${limit}, offset: ${offset})...`);
+    const response = await api.get<AllEvaluationsResponse>(
+      `/inference-engine/evaluations?limit=${limit}&offset=${offset}`
+    );
+    // Si la respuesta viene envuelta en ApiResponse, extraer data, sino devolver directamente
+    return response.data || response;
   }
 
   /**
