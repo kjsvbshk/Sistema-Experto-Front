@@ -6,17 +6,35 @@ import { menuItems } from './menuItems';
 import { hasPermission } from '../../utils/hasPermission';
 import { useState, useEffect } from 'react';
 import { useAuthorization } from '../../hooks/useAuthorization';
+import { useUserType } from '../../hooks/useUserType';
 
 export default function Sidebar() {
     const { isOpen, closeSidebar, toggleSidebar, openSidebar } = useSidebar();
     const { user } = useAuth();
     const { isAdmin } = useAuthorization();
+    const { userType } = useUserType();
 
     const [isManualToggle, setIsManualToggle] = useState(false);
 
     const filteredMenuItems = menuItems.filter((menu) => {
+        // Filtrar por permisos
         if (menu.permission && menu.permission.length > 0) {
-            return hasPermission(menu.permission, user?.permissions, isAdmin);
+            if (!hasPermission(menu.permission, user?.permissions, isAdmin)) {
+                return false;
+            }
+        }
+
+        // Filtrar por userType
+        if (menu.userType) {
+            if (Array.isArray(menu.userType)) {
+                if (!userType || !menu.userType.includes(userType)) {
+                    return false;
+                }
+            } else {
+                if (userType !== menu.userType) {
+                    return false;
+                }
+            }
         }
 
         return true;

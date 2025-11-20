@@ -46,9 +46,14 @@ export interface UpdateUserRequest {
 }
 
 export const usersService = {
-    // Obtener todos los usuarios (solo usuarios activos)
+    // Obtener todos los usuarios (solo usuarios activos) - Solo Administradores
     async getAllUsers(): Promise<ApiResponse<User[]>> {
         return await api.get<User[]>("/users/all");
+    },
+
+    // Obtener solo clientes - Expertos y Administradores
+    async getClientes(): Promise<ApiResponse<User[]>> {
+        return await api.get<User[]>("/users/clientes");
     },
 
     // Obtener usuarios con sus roles

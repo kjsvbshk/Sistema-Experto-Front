@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserType } from '../hooks/useUserType';
 import Navbar from '../components/Navbar';
 
 export default function MainPage() {
   const { user } = useAuth();
+  const { isExperto, isCliente } = useUserType();
   const [showBounce, setShowBounce] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -132,36 +134,64 @@ export default function MainPage() {
             </div>
           </div>
 
-          {/* Call to Action Section */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg border border-indigo-500 p-8 text-center">
-            <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                ¿Listo para Evaluar un Cliente?
-              </h2>
-              <p className="text-indigo-100 text-lg mb-6">
-                Nuestro sistema experto analizará el perfil crediticio de tu cliente aplicando reglas
-                predefinidas y te recomendará los productos más adecuados basándose en su historial,
-                ingresos y capacidad de pago.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  to="/agent"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                  Iniciar Evaluación
-                </Link>
-                <button className="inline-flex items-center px-6 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Ver Demo
-                </button>
+          {/* Call to Action Section - Solo para Expertos */}
+          {isExperto && (
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg border border-indigo-500 p-8 text-center">
+              <div className="max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  ¿Listo para Evaluar un Cliente?
+                </h2>
+                <p className="text-indigo-100 text-lg mb-6">
+                  Nuestro sistema experto analizará el perfil crediticio de tu cliente aplicando reglas
+                  predefinidas y te recomendará los productos más adecuados basándose en su historial,
+                  ingresos y capacidad de pago.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    to="/agent"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    Iniciar Evaluación
+                  </Link>
+                  <button className="inline-flex items-center px-6 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Ver Demo
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Call to Action Section - Solo para Clientes */}
+          {isCliente && (
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg border border-indigo-500 p-8 text-center">
+              <div className="max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  Consulta tu Historial de Evaluaciones
+                </h2>
+                <p className="text-indigo-100 text-lg mb-6">
+                  Revisa todas las evaluaciones crediticias que se han realizado para ti. 
+                  Podrás ver los resultados, recomendaciones de productos y el estado de cada evaluación.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    to="/my-history"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Ver Mi Historial
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

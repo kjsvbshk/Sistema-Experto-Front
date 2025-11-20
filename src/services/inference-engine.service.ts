@@ -3,7 +3,7 @@ import type { ApiResponse } from "./api";
 
 // Interfaces para el motor de inferencia
 export interface StartEvaluationRequest {
-  user_id?: number;
+  cliente_id: number;
   input_data: {
     age: number;
     monthly_income: number;
@@ -121,7 +121,16 @@ class InferenceEngineService {
   }
 
   /**
-   * Obtiene el historial de evaluaciones de un usuario
+   * Obtiene el historial de evaluaciones del cliente autenticado (Solo Clientes)
+   */
+  async getMyEvaluationHistory(): Promise<EvaluationSession[]> {
+    console.log(`📊 Obteniendo mi historial de evaluaciones...`);
+    const response = await api.get<EvaluationSession[]>(`/inference-engine/my-history`);
+    return response.data || response;
+  }
+
+  /**
+   * Obtiene el historial de evaluaciones de un usuario (Expertos y Administradores)
    */
   async getEvaluationHistory(userId: number): Promise<EvaluationSession[]> {
     console.log(`📊 Obteniendo historial de evaluaciones para usuario ${userId}...`);
@@ -139,7 +148,15 @@ class InferenceEngineService {
   }
 
   /**
-   * Obtiene detalles de una sesión de evaluación específica
+   * Obtiene detalles de mi sesión de evaluación (Solo Clientes)
+   */
+  async getMyEvaluationSession(sessionId: string): Promise<ApiResponse<any>> {
+    console.log(`🔍 Obteniendo detalles de mi sesión ${sessionId}...`);
+    return await api.get<any>(`/inference-engine/my-session/${sessionId}`);
+  }
+
+  /**
+   * Obtiene detalles de una sesión de evaluación específica (Expertos y Administradores)
    */
   async getEvaluationSession(sessionId: string): Promise<ApiResponse<any>> {
     console.log(`🔍 Obteniendo detalles de sesión ${sessionId}...`);

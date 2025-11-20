@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { HelpCircle, CheckCircle, XCircle, AlertCircle, TrendingUp, DollarSign, CreditCard, Home, Car, Briefcase, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { HelpCircle, CheckCircle, XCircle, AlertCircle, TrendingUp, DollarSign, CreditCard, Home, Car, Briefcase, Users, UserSearch } from 'lucide-react';
 import { 
   inferenceEngineService, 
   type StartEvaluationRequest, 
@@ -7,6 +7,7 @@ import {
 } from '../../services/inference-engine.service';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { usersService } from '../../services/users.service';
 
 interface ExpertSystemEvaluationProps {
   onEvaluationComplete?: (result: EvaluationResult) => void;
@@ -18,9 +19,12 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
   const { showSuccess, showError } = useNotification();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // 0 = selección de cliente
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [selectedClienteId, setSelectedClienteId] = useState<number | null>(null);
+  const [clientes, setClientes] = useState<Array<{ id: number; username: string; email: string; type: string }>>([]);
+  const [loadingClientes, setLoadingClientes] = useState(false);
 
   // Función para formatear valores monetarios
   const formatCurrency = (value: number | string | undefined): string => {
@@ -523,7 +527,25 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
     down_payment_percentage: 0
   });
 
-  const totalSteps = 4;
+  // Cargar lista de clientes al montar el componente
+  useEffect(() => {
+    const loadClientes = async () => {
+      try {
+        setLoadingClientes(true);
+        const response = await usersService.getClientes();
+        const clientesList = response.data || [];
+        setClientes(clientesList.map((c: any) => ({ ...c, type: 'cliente' })));
+      } catch (error) {
+        console.error('Error cargando clientes:', error);
+        showError('Error al cargar la lista de clientes');
+      } finally {
+        setLoadingClientes(false);
+      }
+    };
+    loadClientes();
+  }, [showError]);
+
+  const totalSteps = 5; // Incluye paso 0 (selección de cliente)
 
   const handleInputChange = (field: keyof StartEvaluationRequest['input_data'], value: any) => {
     // Validar el campo
@@ -544,23 +566,29 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
 
   const handleNext = () => {
     if (!validateCurrentStep()) {
-      showError('Todos los campos son obligatorios para continuar');
+      if (currentStep === 0) {
+        showError('Debes seleccionar un cliente para continuar');
+      } else {
+        showError('Todos los campos son obligatorios para continuar');
+      }
       return;
     }
     
-    if (currentStep < totalSteps) {
+    if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
   const validateCurrentStep = (): boolean => {
     switch (currentStep) {
+      case 0:
+        return selectedClienteId !== null;
       case 1:
         return !!(formData.age > 0 && formData.monthly_income > 0 && formData.credit_score > 0 && formData.employment_status);
       case 2:
@@ -613,10 +641,16 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
         ...(formData.is_legal_pension !== undefined && formData.is_legal_pension !== null ? { is_legal_pension: formData.is_legal_pension } : {}),
       };
 
+      if (!selectedClienteId) {
+        showError('Debes seleccionar un cliente antes de continuar');
+        setIsLoading(false);
+        return;
+      }
+
       const evaluationRequest: StartEvaluationRequest = {
+        cliente_id: selectedClienteId,
         input_data: cleanedFormData,
         session_id: inferenceEngineService.generateSessionId(),
-        user_id: user?.id // Agregar el ID del usuario autenticado
       };
 
       console.log('📤 Enviando datos de evaluación:', JSON.stringify(evaluationRequest, null, 2));
@@ -641,6 +675,56 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
       setIsLoading(false);
     }
   };
+
+  const renderStep0 = () => (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-6">
+        <UserSearch className="h-6 w-6 text-indigo-400" />
+        <h3 className="text-lg font-semibold text-white">Seleccionar Cliente</h3>
+      </div>
+      
+      <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 mb-4">
+        <p className="text-gray-300 text-sm">
+          Antes de iniciar la evaluación, debes seleccionar el cliente sobre el cual se realizará la evaluación. 
+          El cliente podrá consultar los resultados en su historial.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Cliente <span className="text-red-400">*</span>
+        </label>
+        {loadingClientes ? (
+          <div className="w-full p-4 border border-gray-600 rounded-lg bg-gray-700 text-gray-400 text-center">
+            Cargando clientes...
+          </div>
+        ) : clientes.length === 0 ? (
+          <div className="w-full p-4 border border-red-600 rounded-lg bg-red-900/20 text-red-300 text-center">
+            No hay clientes disponibles. Por favor, crea un cliente primero desde el panel de administración.
+          </div>
+        ) : (
+          <select
+            value={selectedClienteId || ''}
+            onChange={(e) => setSelectedClienteId(parseInt(e.target.value))}
+            className="w-full p-4 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-lg"
+          >
+            <option value="">Seleccione un cliente...</option>
+            {clientes.map((cliente) => (
+              <option key={cliente.id} value={cliente.id}>
+                {cliente.username} ({cliente.email})
+              </option>
+            ))}
+          </select>
+        )}
+        {selectedClienteId && (
+          <div className="mt-2 text-sm text-green-400 flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" />
+            Cliente seleccionado correctamente
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   const renderStep1 = () => (
     <div className="space-y-6">
@@ -1334,7 +1418,8 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
           <button
             onClick={() => {
               setEvaluationResult(null);
-              setCurrentStep(1);
+              setCurrentStep(0);
+              setSelectedClienteId(null);
               setFormData({
                 age: 0,
                 monthly_income: 0,
@@ -1390,13 +1475,14 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
               ></div>
             </div>
           </div>
 
           {/* Step Content */}
           <div className="mb-8">
+            {currentStep === 0 && renderStep0()}
             {currentStep === 1 && renderStep1()}
             {currentStep === 2 && renderStep2()}
             {currentStep === 3 && renderStep3()}
@@ -1407,8 +1493,8 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
           <div className="flex justify-between items-center">
             <button
               onClick={handlePrevious}
-              disabled={currentStep === 1}
-              className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${currentStep === 1
+              disabled={currentStep === 0}
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${currentStep === 0
                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
                 }`}
@@ -1429,7 +1515,7 @@ export const ExpertSystemEvaluation: React.FC<ExpertSystemEvaluationProps> = ({
               )}
             </div>
 
-            {currentStep < totalSteps ? (
+            {currentStep < totalSteps - 1 ? (
               <button
                 onClick={handleNext}
                 disabled={!canProceed}

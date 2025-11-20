@@ -28,15 +28,72 @@ export class ApiErrorHandler extends Error {
     }
 }
 
+// Variable para evitar múltiples intentos de refresh simultáneos
+let isRefreshing = false;
+let refreshPromise: Promise<string> | null = null;
+
+// Función para refrescar el token
+async function refreshAccessToken(): Promise<string> {
+    if (refreshPromise) {
+        return refreshPromise;
+    }
+
+    refreshPromise = (async () => {
+        try {
+            const refreshToken = tokenManager.getRefreshToken();
+            if (!refreshToken) {
+                throw new Error("No refresh token available");
+            }
+
+            const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ refreshToken }),
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to refresh token");
+            }
+
+            const data = await response.json();
+            const newAccessToken = data.data?.accessToken || data.accessToken;
+            
+            if (newAccessToken) {
+                tokenManager.setAccessToken(newAccessToken);
+                if (data.data?.refreshToken || data.refreshToken) {
+                    tokenManager.setRefreshToken(data.data?.refreshToken || data.refreshToken);
+                }
+                return newAccessToken;
+            }
+
+            throw new Error("No access token in refresh response");
+        } catch (error) {
+            // Si falla el refresh, limpiar tokens y redirigir al login
+            tokenManager.clearTokens();
+            window.location.href = "/login";
+            throw error;
+        } finally {
+            refreshPromise = null;
+            isRefreshing = false;
+        }
+    })();
+
+    return refreshPromise;
+}
+
 // Función para hacer peticiones HTTP
 export async function apiRequest<T = any>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    retryCount = 0
 ): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
 
     // Obtener token del localStorage
-    const token = localStorage.getItem("accessToken");
+    let token = localStorage.getItem("accessToken");
 
     const defaultHeaders: HeadersInit = {
         "Content-Type": "application/json",
@@ -64,6 +121,26 @@ export async function apiRequest<T = any>(
 
     try {
         const response = await fetch(url, config);
+
+        // Si la respuesta es 401 y no es un endpoint de auth, intentar refrescar el token
+        if (response.status === 401 && !endpoint.includes("/auth/") && retryCount === 0) {
+            console.log("🔄 Token expirado, intentando refrescar...");
+            
+            try {
+                const newToken = await refreshAccessToken();
+                // Reintentar la petición con el nuevo token
+                return apiRequest<T>(endpoint, options, retryCount + 1);
+            } catch (refreshError) {
+                console.error("❌ Error al refrescar token:", refreshError);
+                // Si falla el refresh, lanzar el error original
+                const errorData = await response.json().catch(() => ({}));
+                throw new ApiErrorHandler(
+                    errorData.message || "Token expirado y no se pudo refrescar",
+                    response.status,
+                    errorData.error
+                );
+            }
+        }
 
         // Si la respuesta no es exitosa, lanzar error
         if (!response.ok) {

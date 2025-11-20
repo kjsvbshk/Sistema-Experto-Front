@@ -5,6 +5,8 @@ import { usersService, type Role } from "./users.service";
 import { permissionsService } from "./permissions.service";
 
 // Tipos para autenticación
+export type UserType = 'experto' | 'administrador' | 'cliente';
+
 export interface User {
     id: number;
     username: string;
@@ -12,6 +14,8 @@ export interface User {
     status: StatusEnum;
     created_at: string;
     updated_at: string;
+    userType?: UserType;
+    type?: UserType; // Alias para compatibilidad
     roles?: Role[];
     permissions?: string[];
 }
@@ -212,6 +216,16 @@ class AuthService {
             tokenManager.setRefreshToken(response.data.refreshToken);
 
             const user = response.data.user;
+            
+            // Asegurar que userType esté presente
+            if (user && !user.userType && !user.type) {
+                // Intentar obtener del token si no está en la respuesta
+                const tokenUser = this.getCurrentUserFromToken();
+                if (tokenUser?.userType) {
+                    user.userType = tokenUser.userType;
+                    user.type = tokenUser.userType;
+                }
+            }
 
             // Obtener roles y permisos
             await this.restoreUserRolesAndPermissions(user);
@@ -260,6 +274,7 @@ class AuthService {
         try {
             // Decodificar el token JWT para obtener información del usuario
             const payload = JSON.parse(atob(token.split(".")[1]));
+            const userType: UserType = payload.userType || 'cliente'; // Default a cliente si no está presente
             const user: User = {
                 id: payload.sub,
                 username: payload.username,
@@ -267,6 +282,8 @@ class AuthService {
                 status: StatusEnum.ACTIVE, // Asumimos activo si el token es válido
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
+                userType: userType,
+                type: userType, // Alias para compatibilidad
             };
 
             return user;
@@ -300,6 +317,16 @@ class AuthService {
             tokenManager.setRefreshToken(response.data.refreshToken);
 
             const user = response.data.user;
+            
+            // Asegurar que userType esté presente
+            if (user && !user.userType && !user.type) {
+                // Intentar obtener del token si no está en la respuesta
+                const tokenUser = this.getCurrentUserFromToken();
+                if (tokenUser?.userType) {
+                    user.userType = tokenUser.userType;
+                    user.type = tokenUser.userType;
+                }
+            }
 
             // Restaurar roles y permisos
             await this.restoreUserRolesAndPermissions(user);

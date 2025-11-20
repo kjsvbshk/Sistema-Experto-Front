@@ -7,17 +7,13 @@ import MainPage from '../pages/MainPage';
 import AdminPage from '../pages/AdminPage';
 import AgentPage from '../pages/AgentPage';
 import RulesAgentPage from '../pages/RulesAgentPage';
+import ClientHistoryPage from '../pages/ClientHistoryPage';
+import { useUserType } from '../hooks/useUserType';
 
 export default function PrivateRoutes() {
   const { isLoading, isAuthenticated } = useAuthorization();
+  const { isExperto, isCliente } = useUserType();
   const location = useLocation();
-
-  // console.log('🔐 AdminRoute:', {
-  //   isAuthenticated,
-  //   isAdmin,
-  //   isLoading,
-  //   path: location.pathname
-  // });
 
   // Mostrar loading mientras se verifica el rol
   if (isLoading) {
@@ -25,7 +21,7 @@ export default function PrivateRoutes() {
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-300">Verificando permisos de administrador...</p>
+          <p className="mt-4 text-gray-300">Verificando permisos...</p>
         </div>
       </div>
     );
@@ -36,15 +32,22 @@ export default function PrivateRoutes() {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Rutas internas para administradores
+  // Rutas internas
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/admin" element={<AdminPage />} />
         <Route path="/main" element={<MainPage />} />
-        <Route path="/agent" element={<AgentPage />} />
-        <Route path="/rules-agent" element={<RulesAgentPage />} />
+        <Route path="/my-history" element={<ClientHistoryPage />} />
+        <Route 
+          path="/agent" 
+          element={isExperto ? <AgentPage /> : <Navigate to="/" replace />} 
+        />
+        <Route 
+          path="/rules-agent" 
+          element={isExperto ? <RulesAgentPage /> : <Navigate to="/" replace />} 
+        />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

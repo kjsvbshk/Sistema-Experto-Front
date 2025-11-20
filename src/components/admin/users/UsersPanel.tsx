@@ -192,8 +192,8 @@ export default function AdminPanel() {
                                             </td>
                                         </tr>
                                     ) : (
-                                        users.map((userWithRole) => (
-                                            <tr key={userWithRole.id} className="hover:bg-gray-700">
+                                        users.map((userWithRole, index) => (
+                                            <tr key={`${userWithRole.user_id}-${userWithRole.role_id}-${index}`} className="hover:bg-gray-700">
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-8 w-8">
@@ -281,7 +281,7 @@ export default function AdminPanel() {
                             <div className="ml-3">
                                 <h3 className="text-sm font-medium text-white">Usuarios Activos</h3>
                                 <p className="text-lg font-bold text-green-400">
-                                    {users.filter(u => u.status === 'active').length}
+                                    {users.filter(u => u.user.status === 'active').length}
                                 </p>
                             </div>
                         </div>
